@@ -43,6 +43,7 @@ async function run() {
 
         // mongodb collection
         const usersCollection = client.db("homzen").collection("users")
+        const propertiesCollection = client.db("homzen").collection("properties");
 
 
         // jwt
@@ -52,6 +53,11 @@ async function run() {
             res.send({ token })
         })
 
+        // properties related api
+        app.get('/properties', async(req, res) => {
+            const result = await propertiesCollection.find().toArray()
+            res.send(result);
+        })
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
