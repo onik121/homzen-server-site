@@ -23,7 +23,7 @@ const client = new MongoClient(uri, {
 
 
 const verifyToken = (req, res, next) => {
-    console.log('inside verify token', req.headers.authorization)
+    // console.log('inside verify token', req.headers.authorization)
     if (!req.headers.authorization) {
         return res.status(401).send({ message: 'unauthorized access' })
     }
@@ -54,10 +54,24 @@ async function run() {
         })
 
         // properties related api
-        app.get('/properties', async(req, res) => {
+        app.get('/properties', async (req, res) => {
             const result = await propertiesCollection.find().toArray()
             res.send(result);
         })
+
+
+        // user related api
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const query = {email: user.email};
+            const existingUser = await usersCollection.findOne(query)
+            if(existingUser) {
+                return res.send({message: 'user alredy exists', insertedId: null})
+            }
+            const result = await usersCollection.insertOne(user)
+            res.send(result)
+        })
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
