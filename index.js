@@ -53,20 +53,28 @@ async function run() {
             res.send({ token })
         })
 
+
+
         // properties related api
         app.get('/properties', async (req, res) => {
             const result = await propertiesCollection.find().toArray()
             res.send(result);
+        })
+        app.get('/properties/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await propertiesCollection.findOne(query)
+            res.send(result)
         })
 
 
         // user related api
         app.post('/users', async (req, res) => {
             const user = req.body;
-            const query = {email: user.email};
+            const query = { email: user.email };
             const existingUser = await usersCollection.findOne(query)
-            if(existingUser) {
-                return res.send({message: 'user alredy exists', insertedId: null})
+            if (existingUser) {
+                return res.send({ message: 'user alredy exists', insertedId: null })
             }
             const result = await usersCollection.insertOne(user)
             res.send(result)
