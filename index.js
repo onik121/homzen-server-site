@@ -23,7 +23,7 @@ const client = new MongoClient(uri, {
 
 
 const verifyToken = (req, res, next) => {
-    console.log('inside verify token', req.headers.authorization)
+    // console.log('inside verify token', req.headers.authorization)
     if (!req.headers.authorization) {
         return res.status(401).send({ message: 'unauthorized access' })
     }
@@ -42,7 +42,8 @@ async function run() {
     try {
 
         // mongodb collection
-        const usersCollection = client.db("homzen").collection("users")
+        const usersCollection = client.db("homzen").collection("users");
+        const propertiesCollection = client.db("homzen").collection("properties");
 
 
         // jwt
@@ -50,6 +51,13 @@ async function run() {
             const user = req.body;
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
             res.send({ token })
+        })
+
+
+        // properties related api
+        app.get('/properties', async(req, res) => {
+            const result = await propertiesCollection.find().toArray()
+            res.send(result);
         })
 
 
