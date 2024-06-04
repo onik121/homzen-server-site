@@ -102,6 +102,11 @@ async function run() {
         // wishList related api
         app.post('/wishlist', async (req, res) => {
             const item = req.body;
+            const query = { propertyId: item.propertyId };
+            const existinItem = await wishListCollection.findOne(query)
+            if (existinItem) {
+                return res.send({ message: 'Item alredy exists', insertedId: null })
+            }
             const result = await wishListCollection.insertOne(item)
             res.send(result)
         })
