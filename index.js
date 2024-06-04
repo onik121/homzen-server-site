@@ -44,6 +44,7 @@ async function run() {
         // mongodb collection
         const usersCollection = client.db("homzen").collection("users")
         const propertiesCollection = client.db("homzen").collection("properties");
+        const wishListCollection = client.db("homzen").collection("wishlist");
 
 
         // jwt
@@ -86,7 +87,6 @@ async function run() {
             }
             res.send({ role });
         });
-        
         app.post('/users', async (req, res) => {
             const user = req.body;
             const query = { email: user.email };
@@ -95,6 +95,14 @@ async function run() {
                 return res.send({ message: 'user alredy exists', insertedId: null })
             }
             const result = await usersCollection.insertOne(user)
+            res.send(result)
+        })
+
+
+        // wishList related api
+        app.post('/wishlist', async (req, res) => {
+            const item = req.body;
+            const result = await wishListCollection.insertOne(item)
             res.send(result)
         })
 
