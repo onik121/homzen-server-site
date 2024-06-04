@@ -100,6 +100,12 @@ async function run() {
 
 
         // wishList related api
+        app.get('/wishlist/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email }
+            const result = await wishListCollection.find(query).toArray();
+            res.send(result)
+        })
         app.post('/wishlist', async (req, res) => {
             const item = req.body;
             const query = { propertyId: item.propertyId };
