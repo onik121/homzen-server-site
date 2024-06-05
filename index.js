@@ -69,6 +69,7 @@ async function run() {
         })
 
 
+        
         // user related api
         app.get('/users/role/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
@@ -104,6 +105,12 @@ async function run() {
             const email = req.params.email;
             const query = { email: email }
             const result = await wishListCollection.find(query).toArray();
+            res.send(result)
+        })
+        app.get('/wishlist/id/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await wishListCollection.findOne(query)
             res.send(result)
         })
         app.post('/wishlist', async (req, res) => {
