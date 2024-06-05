@@ -45,6 +45,7 @@ async function run() {
         const usersCollection = client.db("homzen").collection("users")
         const propertiesCollection = client.db("homzen").collection("properties");
         const wishListCollection = client.db("homzen").collection("wishlist");
+        const offersCollection = client.db("homzen").collection("offers");
 
 
         // jwt
@@ -69,7 +70,7 @@ async function run() {
         })
 
 
-        
+
         // user related api
         app.get('/users/role/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
@@ -115,7 +116,7 @@ async function run() {
         })
         app.post('/wishlist', async (req, res) => {
             const item = req.body;
-            const query = { propertyId: item.propertyId };
+            const query = { propertyId: item.propertyId,  email: item.email };
             const existinItem = await wishListCollection.findOne(query)
             if (existinItem) {
                 return res.send({ message: 'Item alredy exists', insertedId: null })
@@ -128,6 +129,19 @@ async function run() {
             const query = { _id: new ObjectId(id) }
             const result = await wishListCollection.deleteOne(query)
             res.send(result);
+        })
+
+
+        // users offers related api
+        app.post('/offer', async (req, res) => {
+            const item = req.body;
+            const query = { propertyId: item.propertyId,  buyerEmail: item.buyerEmail };
+            const existinOffer = await offersCollection.findOne(query)
+            if (existinOffer) {
+                return res.send({ message: 'Item alredy exists', insertedId: null })
+            }
+            const result = await offersCollection.insertOne(item)
+            res.send(result)
         })
 
         // Send a ping to confirm a successful connection
