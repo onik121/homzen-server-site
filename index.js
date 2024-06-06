@@ -116,7 +116,7 @@ async function run() {
         })
         app.post('/wishlist', async (req, res) => {
             const item = req.body;
-            const query = { propertyId: item.propertyId,  email: item.email };
+            const query = { propertyId: item.propertyId, email: item.email };
             const existinItem = await wishListCollection.findOne(query)
             if (existinItem) {
                 return res.send({ message: 'Item alredy exists', insertedId: null })
@@ -133,9 +133,15 @@ async function run() {
 
 
         // users offers related api
+        app.get('/offer/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { buyerEmail: email }
+            const result = await offersCollection.find(query).toArray()
+            res.send(result);
+        })
         app.post('/offer', async (req, res) => {
             const item = req.body;
-            const query = { propertyId: item.propertyId,  buyerEmail: item.buyerEmail };
+            const query = { propertyId: item.propertyId, buyerEmail: item.buyerEmail };
             const existinOffer = await offersCollection.findOne(query)
             if (existinOffer) {
                 return res.send({ message: 'Item alredy exists', insertedId: null })
