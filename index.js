@@ -132,7 +132,13 @@ async function run() {
         })
 
 
-        // users offers related api
+        //  property offers related api
+        app.get('/offer/agent/:email', async (req, res) => {
+            const agentEmail = req.params.email;
+            const query = { agent_email: agentEmail }
+            const result = await offersCollection.find(query).toArray()
+            res.send(result);
+        })
         app.get('/offer/:email', async (req, res) => {
             const email = req.params.email;
             const query = { buyerEmail: email }
