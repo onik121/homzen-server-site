@@ -155,6 +155,29 @@ async function run() {
             const result = await offersCollection.insertOne(item)
             res.send(result)
         })
+        app.patch('/offer/status/:id', async (req, res) => {
+            const item = req.body;
+            const offerId = new ObjectId(item.id);
+            const filter = { _id: offerId };
+            const updateSelectedOffer = {
+                $set: { status: item.action },
+            };
+
+            const result = await offersCollection.updateOne(filter, updateSelectedOffer);
+            if (item.action === 'accept') {
+                const offer = await offersCollection.findOne({ _id: offerId });
+                const propertyId = offer.propertyId;
+                const updateOtherOffers = {
+                    $set: { status: 'reject' },
+                };
+                const otherOffersFilter = {
+                    propertyId: propertyId,
+                    _id: { $ne: offerId },
+                };
+                await offersCollection.updateMany(otherOffersFilter, updateOtherOffers);
+            }
+            res.send(result);
+        });
         app.delete('/offer/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
