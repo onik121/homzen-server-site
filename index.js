@@ -87,6 +87,32 @@ async function run() {
             const result = await propertiesCollection.deleteOne(query)
             res.send(result)
         })
+            // agent
+        app.patch('/properties/:id', async (req, res) => {
+            const id = req.params.id;
+            const data = req.body;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updateCoffe = {
+                $set: {
+                    property_title: data.property_title,
+                    property_location: data.property_location,
+                    price: data.price,
+                    apartment_type: data.apartment_type,
+                    bedrooms: data.bedrooms,
+                    area: data.area,
+                    washrooms: data.washrooms,
+                    garages: data.garages,
+                    land_size: data.land_size,
+                    built_year: data.built_year,
+                    property_status: data.property_status,
+                    description: data.description,
+                    property_image: data.property_image,
+                },
+            };
+            const result = await propertiesCollection.updateOne(filter, updateCoffe, options);
+            res.send(result)
+        })
 
 
 
