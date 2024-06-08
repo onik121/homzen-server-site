@@ -68,13 +68,20 @@ async function run() {
             const result = await propertiesCollection.findOne(query)
             res.send(result)
         })
+        // agent
+        app.get('/properties/agent/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { agent_email: email }
+            const result = await propertiesCollection.find().toArray();
+            res.send(result)
+        })
         app.post('/properties', async (req, res) => {
             const data = req.body;
             const result = await propertiesCollection.insertOne(data)
             res.send(result)
         })
 
-
+        
         // user related api
         app.get('/users/role/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
