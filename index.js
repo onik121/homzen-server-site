@@ -68,7 +68,11 @@ async function run() {
             const result = await propertiesCollection.findOne(query)
             res.send(result)
         })
-
+        app.post('/properties', async (req, res) => {
+            const data = req.body;
+            const result = await propertiesCollection.insertOne(data)
+            res.send(result)
+        })
 
 
         // user related api
