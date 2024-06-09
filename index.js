@@ -242,10 +242,14 @@ async function run() {
         app.get('/reviews/:id', async (req, res) => {
             const id = req.params.id;
             const query = { propertyId: id }
-            const result = await reviewsCollection.find(query).toArray();
+            const result = await reviewsCollection.find(query).sort({ created_at: -1 }).toArray();
             res.send(result)
         })
-
+        app.post('/reviews', async (req, res) => {
+            const data = req.body
+            const result = await reviewsCollection.insertOne(data)
+            res.send(result)
+        })
 
 
         // Send a ping to confirm a successful connection
