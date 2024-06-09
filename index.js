@@ -48,6 +48,17 @@ async function run() {
         const offersCollection = client.db("homzen").collection("offers");
         const reviewsCollection = client.db("homzen").collection("reviews");
 
+        // admin
+        const verifyAdmin = async (req, res, next) => {
+            const email = req.decoded.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query)
+            const isAdmin = user?.role === 'admin';
+            if (!isAdmin) {
+                return res.status(403).send({ message: 'forbidden access' })
+            }
+            next();
+        }
 
         // jwt
         app.post('/jwt', async (req, res) => {
@@ -118,6 +129,10 @@ async function run() {
 
 
         // user related api
+        app.get('/users/admin', verifyToken, verifyAdmin, async (req, res) => {
+            const result = await usersCollection.find().toArray()
+            res.send(result);
+        })
         app.get('/users/role/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
             if (email !== req.decoded.email) {
@@ -145,6 +160,9 @@ async function run() {
             const result = await usersCollection.insertOne(user)
             res.send(result)
         })
+        
+
+
 
 
         // wishList related api
