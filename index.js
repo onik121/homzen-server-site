@@ -160,7 +160,16 @@ async function run() {
             const result = await usersCollection.insertOne(user)
             res.send(result)
         })
-        
+        app.patch('/user/status/:id', async (req, res) => {
+            const item = req.body;
+            const offerId = new ObjectId(item.id);
+            const filter = { _id: offerId };
+            const updateSelectedOffer = {
+                $set: { role: item.action },
+            };
+            const result = await usersCollection.updateOne(filter, updateSelectedOffer);
+            res.send(result);
+        })
 
 
 
