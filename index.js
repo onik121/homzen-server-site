@@ -87,8 +87,8 @@ async function run() {
             const result = await propertiesCollection.find(query).sort({ created_at: -1 }).toArray();
             res.send(result);
         })
-        // admin
-        app.get('/properties/all', async (req, res) => {
+        // chnage
+        app.get('/properties/all', verifyToken, verifyAdmin, async (req, res) => {
             const result = await propertiesCollection.find().sort({ created_at: -1 }).toArray();
             res.send(result);
         })
@@ -98,20 +98,21 @@ async function run() {
             const result = await propertiesCollection.findOne(query)
             res.send(result)
         })
-        // agent
-        app.get('/properties/agent/:email', async (req, res) => {
+        // change
+        app.get('/properties/agent/:email', verifyToken, verifyAgent, async (req, res) => {
             const email = req.params.email;
             const query = { agent_email: email }
             const result = await propertiesCollection.find(query).sort({ created_at: -1 }).toArray();
             res.send(result)
         })
-        app.post('/properties', async (req, res) => {
+        // change
+        app.post('/properties', verifyToken, verifyAgent, async (req, res) => {
             const data = req.body;
             const result = await propertiesCollection.insertOne(data)
             res.send(result)
         })
-        // admin
-        app.patch('/property/verification-status/:id', async (req, res) => {
+        // change
+        app.patch('/property/verification-status/:id', verifyToken, verifyAdmin, async (req, res) => {
             const item = req.body;
             const filter = { _id: new ObjectId(item.id) };
             const updateVerificationStatus = {
@@ -332,7 +333,7 @@ async function run() {
 
 
         // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
+        // await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     }
     finally {
