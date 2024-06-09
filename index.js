@@ -84,7 +84,7 @@ async function run() {
         app.get('/properties/agent/:email', async (req, res) => {
             const email = req.params.email;
             const query = { agent_email: email }
-            const result = await propertiesCollection.find().toArray();
+            const result = await propertiesCollection.find(query).toArray();
             res.send(result)
         })
         app.post('/properties', async (req, res) => {
@@ -160,17 +160,26 @@ async function run() {
             const result = await usersCollection.insertOne(user)
             res.send(result)
         })
-        app.patch('/user/status/:id', async (req, res) => {
+        app.patch('/user/status/:id', verifyToken, verifyAdmin, async (req, res) => {
             const item = req.body;
+            console.log(item)
             const offerId = new ObjectId(item.id);
             const filter = { _id: offerId };
             const updateSelectedOffer = {
                 $set: { role: item.action },
             };
             const result = await usersCollection.updateOne(filter, updateSelectedOffer);
+            if (item.action === 'fraud') {
+                await propertiesCollection.deleteMany({ agent_email: item.email });
+            }
             res.send(result);
         })
-
+        app.delete('/user/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)}
+            const result = await usersCollection.deleteOne(query)
+            res.send(result);
+        })
 
 
 
