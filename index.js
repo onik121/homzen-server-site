@@ -59,6 +59,18 @@ async function run() {
             }
             next();
         }
+        // agent
+        const verifyAgent = async (req, res, next) => {
+            const email = req.decoded.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query)
+            const isAgent = user?.role === 'agent';
+            if (!isAgent) {
+                return res.status(403).send({ message: 'forbidden access' })
+            }
+            next();
+        }
+
 
         // jwt
         app.post('/jwt', async (req, res) => {
@@ -203,7 +215,7 @@ async function run() {
         app.get('/wishlist/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email: email }
-            const result = await wishListCollection.find(query).toArray();
+            const result = await wishListCollection.find(query).sort({ created_at: -1 }).toArray();
             res.send(result)
         })
         app.get('/wishlist/id/:id', async (req, res) => {
