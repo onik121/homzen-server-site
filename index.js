@@ -46,6 +46,7 @@ async function run() {
         const propertiesCollection = client.db("homzen").collection("properties");
         const wishListCollection = client.db("homzen").collection("wishlist");
         const offersCollection = client.db("homzen").collection("offers");
+        const reviewsCollection = client.db("homzen").collection("reviews");
 
 
         // jwt
@@ -229,6 +230,18 @@ async function run() {
             const result = await offersCollection.deleteOne(query)
             res.send(result)
         })
+
+
+
+
+        // reviews
+        app.get('/reviews', async (req, res) => {
+            const result = await reviewsCollection.find().sort({ created_at: -1 }).toArray();
+            res.send(result);
+        })
+        
+
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
