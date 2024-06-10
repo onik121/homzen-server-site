@@ -259,7 +259,7 @@ async function run() {
         })
         app.get('/offer/id/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await offersCollection.findOne(query)
             res.send(result);
         })
@@ -363,7 +363,13 @@ async function run() {
         // store sold properties
         app.get('/sold-property/agent/:email', verifyToken, verifyAgent, async (req, res) => {
             const email = req.params.email;
-            const query = {agent_email: email}
+            const query = { agent_email: email }
+            const result = await soldPropertyCollection.find(query).sort({ created_at: -1 }).toArray();
+            res.send(result);
+        })
+        app.get('/sold-property/user/:email', verifyToken, async (req, res) => {
+            const email = req.params.email;
+            const query = { buyer_email: email }
             const result = await soldPropertyCollection.find(query).sort({ created_at: -1 }).toArray();
             res.send(result);
         })
