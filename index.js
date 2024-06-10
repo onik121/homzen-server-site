@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 const port = process.env.PORT || 5000;
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
 // midleware
 app.use(cors());
@@ -83,7 +84,7 @@ async function run() {
 
         // properties related api
         app.get('/properties', async (req, res) => {
-            const query = {verification_status: 'verified'}
+            const query = { verification_status: 'verified' }
             const result = await propertiesCollection.find(query).sort({ created_at: -1 }).toArray();
             res.send(result);
         })
@@ -205,7 +206,7 @@ async function run() {
         })
         app.delete('/user/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await usersCollection.deleteOne(query)
             res.send(result);
         })
@@ -329,6 +330,22 @@ async function run() {
             const query = { _id: new ObjectId(id) }
             const result = await reviewsCollection.deleteOne(query)
             res.send(result)
+        })
+
+
+        // payment intent
+        app.post('/create-payment-intent', async (req, res) => {
+            const { price } = req.body;
+            console.log(price)
+            const amount = parseInt(price * 100)
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: "usd",
+                payment_method_types: ["card"],
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
         })
 
 
