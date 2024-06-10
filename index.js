@@ -361,6 +361,12 @@ async function run() {
         })
 
         // store sold properties
+        app.get('/sold-property/agent/:email', verifyToken, verifyAgent, async (req, res) => {
+            const email = req.params.email;
+            const query = {agent_email: email}
+            const result = await soldPropertyCollection.find(query).sort({ created_at: -1 }).toArray();
+            res.send(result);
+        })
         app.post('/sold-property', async (req, res) => {
             const data = req.body;
             const result = await soldPropertyCollection.insertOne(data)
