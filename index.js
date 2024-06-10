@@ -89,7 +89,6 @@ async function run() {
             const result = await propertiesCollection.find(query).sort({ created_at: -1 }).toArray();
             res.send(result);
         })
-        // chnage
         app.get('/properties/all', verifyToken, verifyAdmin, async (req, res) => {
             const result = await propertiesCollection.find().sort({ created_at: -1 }).toArray();
             res.send(result);
@@ -100,20 +99,17 @@ async function run() {
             const result = await propertiesCollection.findOne(query)
             res.send(result)
         })
-        // change
         app.get('/properties/agent/:email', verifyToken, verifyAgent, async (req, res) => {
             const email = req.params.email;
             const query = { agent_email: email }
             const result = await propertiesCollection.find(query).sort({ created_at: -1 }).toArray();
             res.send(result)
         })
-        // change
         app.post('/properties', verifyToken, verifyAgent, async (req, res) => {
             const data = req.body;
             const result = await propertiesCollection.insertOne(data)
             res.send(result)
         })
-        // change
         app.patch('/property/verification-status/:id', verifyToken, verifyAdmin, async (req, res) => {
             const item = req.body;
             const filter = { _id: new ObjectId(item.id) };
@@ -123,14 +119,12 @@ async function run() {
             const result = await propertiesCollection.updateOne(filter, updateVerificationStatus);
             res.send(result)
         })
-        // agent
         app.delete('/properties/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await propertiesCollection.deleteOne(query)
             res.send(result)
         })
-        // agent
         app.patch('/properties/:id', async (req, res) => {
             const id = req.params.id;
             const data = req.body;
@@ -294,17 +288,9 @@ async function run() {
                 };
                 await offersCollection.updateMany(otherOffersFilter, updateOtherOffers);
                 await wishListCollection.deleteOne({ propertyId: item.propertyId });
+                await propertiesCollection.deleteOne({ _id: new ObjectId(item.propertyId) })
             }
             res.send(result);
-        })
-        app.patch('/offer/payment-status/:id', async (req, res) => {
-            const item = req.body;
-            const filter = { _id: new ObjectId(item.propertyId) };
-            const updateSelectedOffer = {
-                $set: { status: item.status },
-            };
-            const result = await offersCollection.updateOne(filter, updateSelectedOffer);
-            res.send(result)
         })
         app.delete('/offer/:id', async (req, res) => {
             const id = req.params.id;
