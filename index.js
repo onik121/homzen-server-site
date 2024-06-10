@@ -257,6 +257,12 @@ async function run() {
             const result = await offersCollection.find(query).toArray()
             res.send(result);
         })
+        app.get('/offer/id/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id)}
+            const result = await offersCollection.findOne(query)
+            res.send(result);
+        })
         app.post('/offer', async (req, res) => {
             const item = req.body;
             const query = { propertyId: item.propertyId, buyerEmail: item.buyerEmail };
@@ -269,7 +275,6 @@ async function run() {
         })
         app.patch('/offer/status/:id', async (req, res) => {
             const item = req.body;
-            // console.log(item)
             const offerId = new ObjectId(item.id);
             const filter = { _id: offerId };
             const updateSelectedOffer = {
@@ -291,7 +296,17 @@ async function run() {
                 await wishListCollection.deleteOne({ propertyId: item.propertyId });
             }
             res.send(result);
-        });
+        })
+        app.patch('/offer/payment-status/:id', async (req, res) => {
+            const item = req.body;
+            const filter = { _id: new ObjectId(item.propertyId) };
+            console.log(filter)
+            const updateSelectedOffer = {
+                $set: { status: item.status },
+            };
+            const result = await offersCollection.updateOne(filter, updateSelectedOffer);
+            res.send(result)
+        })
         app.delete('/offer/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
@@ -336,7 +351,6 @@ async function run() {
         // payment intent
         app.post('/create-payment-intent', async (req, res) => {
             const { price } = req.body;
-            console.log(price)
             const amount = parseInt(price * 100)
             const paymentIntent = await stripe.paymentIntents.create({
                 amount: amount,
