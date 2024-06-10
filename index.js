@@ -48,6 +48,7 @@ async function run() {
         const wishListCollection = client.db("homzen").collection("wishlist");
         const offersCollection = client.db("homzen").collection("offers");
         const reviewsCollection = client.db("homzen").collection("reviews");
+        const soldPropertyCollection = client.db("homzen").collection("sold ");
 
         // admin
         const verifyAdmin = async (req, res, next) => {
@@ -192,7 +193,6 @@ async function run() {
         })
         app.patch('/user/status/:id', verifyToken, verifyAdmin, async (req, res) => {
             const item = req.body;
-            console.log(item)
             const offerId = new ObjectId(item.id);
             const filter = { _id: offerId };
             const updateSelectedOffer = {
@@ -300,7 +300,6 @@ async function run() {
         app.patch('/offer/payment-status/:id', async (req, res) => {
             const item = req.body;
             const filter = { _id: new ObjectId(item.propertyId) };
-            console.log(filter)
             const updateSelectedOffer = {
                 $set: { status: item.status },
             };
@@ -341,7 +340,6 @@ async function run() {
         })
         app.delete('/reviews/:id', async (req, res) => {
             const id = req.params.id;
-            console.log(id)
             const query = { _id: new ObjectId(id) }
             const result = await reviewsCollection.deleteOne(query)
             res.send(result)
@@ -360,6 +358,14 @@ async function run() {
             res.send({
                 clientSecret: paymentIntent.client_secret,
             });
+        })
+
+        // store sold properties
+        app.post('/sold-property', async (req, res) => {
+            const data = req.body;
+            const result = await soldPropertyCollection.insertOne(data)
+            await offersCollection.deleteOne({ propertyId: data.propertyId });
+            res.send(result)
         })
 
 
